@@ -1,4 +1,4 @@
-#include "main.h"
+#include "leanify-main.h"
 
 #include <climits>
 #include <cstring>

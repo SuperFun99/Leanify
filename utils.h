@@ -35,13 +35,4 @@ void VerbosePrint(const T& t) {
   std::cout << t << std::endl;
 }
 
-template <typename T, typename... Args>
-void VerbosePrint(const T& t, const Args&... args) {
-  if (!is_verbose)
-    return;
-
-  std::cout << t;
-  VerbosePrint(args...);
-}
-
 #endif  // UTILS_H_

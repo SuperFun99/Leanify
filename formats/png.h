@@ -10,6 +10,10 @@ extern int iterations;
 class Png : public Format {
  public:
   using Format::Format;
+  Png(void* p, size_t s = 0)
+      : Format(p, s)
+  {
+  }
 
   size_t Leanify(size_t size_leanified = 0) override;
 

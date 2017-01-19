@@ -44,9 +44,11 @@ static int ZopfliGetDistExtraBits(int dist) {
 #ifdef ZOPFLI_HAS_BUILTIN_CLZ
   return (31 ^ __builtin_clz(dist - 1)) - 1; /* log2(dist - 1) - 1 */
 #elif defined ZOPFLI_HAS_BITSCANREVERSE
-  unsigned long l;
-  _BitScanReverse(&l, dist - 1);
-  return l - 1;
+  {
+      unsigned long l;
+      _BitScanReverse(&l, dist - 1);
+      return l - 1;
+  }
 #else
   if (dist < 9) return 1;
   else if (dist < 17) return 2;
@@ -113,10 +115,14 @@ static int ZopfliGetDistSymbol(int dist) {
   if (dist < 5) {
     return dist - 1;
   } else {
-    unsigned long l;
-    _BitScanReverse(&l, dist - 1);
-    int r = ((dist - 1) >> (l - 1)) & 1;
-    return l * 2 + r;
+      {
+          unsigned long l;
+          _BitScanReverse(&l, dist - 1);
+          {
+              int r = ((dist - 1) >> (l - 1)) & 1;
+              return l * 2 + r;
+          }
+      }
   }
 #else
   if (dist < 193) {

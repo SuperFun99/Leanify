@@ -56,7 +56,7 @@ size_t Png::Leanify(size_t size_leanified /*= 0*/) {
       idat_addr = p_write;
     }
 
-    bool should_remove = [&]() {
+    bool should_remove = [&]() -> bool {
       // Check the case of first letter, keep all critical chunks.
       if ((chunk_type & 0x20) == 0)
         return false;
@@ -110,7 +110,11 @@ size_t Png::Leanify(size_t size_leanified /*= 0*/) {
     zopflipng_options.use_zopfli = !is_fast;
     zopflipng_options.lossy_transparent = true;
     // see the switch above for information about these chunks
-    zopflipng_options.keepchunks = { "acTL", "fcTL", "fdAT", "npTc" };
+    zopflipng_options.keepchunks.clear();
+    zopflipng_options.keepchunks.push_back("acTL");
+    zopflipng_options.keepchunks.push_back("fcTL");
+    zopflipng_options.keepchunks.push_back("fdAT");
+    zopflipng_options.keepchunks.push_back("npTc");
     if (keep_icc_profile_)
       zopflipng_options.keepchunks.push_back("iCCP");
     zopflipng_options.num_iterations = iterations;
@@ -140,7 +144,6 @@ size_t Png::Leanify(size_t size_leanified /*= 0*/) {
   if (idat_addr && (resultpng_size != size_ || size_ < 32768)) {
     // sometimes the strategy chosen by ZopfliPNG is worse than original
     // then try to recompress IDAT chunk using only Zopfli
-    VerbosePrint("ZopfliPNG failed to reduce size, try Zopfli only.");
     uint32_t idat_length = BSWAP32(*(uint32_t*)idat_addr);
     uint32_t new_idat_length = ZlibRecompress(idat_addr + 8, idat_length);
     if (idat_length != new_idat_length) {
